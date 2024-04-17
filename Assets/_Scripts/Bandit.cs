@@ -8,6 +8,7 @@ public class Bandit : MonoBehaviour {
     private Animator            m_animator;
     private Rigidbody2D         m_body2d;
     private Sensor_Bandit       m_groundSensor;
+    private int                 m_facingDirection = 1;
     private bool                m_grounded = false;
     private bool                m_combatIdle = false;
     private bool                m_isDead = false;
@@ -37,10 +38,18 @@ public class Bandit : MonoBehaviour {
         float inputX = Input.GetAxis("Horizontal");
 
         // Swap direction of sprite depending on walk direction
-        if (inputX > 0)
-            transform.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
-        else if (inputX < 0)
-            transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+
+        if (inputX < 0)
+        {
+            GetComponent<SpriteRenderer>().flipX = false;
+            m_facingDirection = 1;
+        }
+
+        else if (inputX > 0)
+        {
+            GetComponent<SpriteRenderer>().flipX = true;
+            m_facingDirection = -1;
+        }
 
         // Move
         m_body2d.velocity = new Vector2(inputX * m_speed, m_body2d.velocity.y);
