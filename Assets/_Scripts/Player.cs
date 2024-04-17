@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     private Animator m_animator;
     private Rigidbody2D m_body2d;
     private Sensor m_groundSensor;
+    private int m_facingDirection = 1;
     private bool m_grounded = false;
     private bool m_combatIdle = false;
     private bool m_isDead = false;
@@ -44,9 +45,16 @@ public class Player : MonoBehaviour
 
         // Swap direction of sprite depending on walk direction
         if (inputX > 0)
-            transform.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
+        {
+            GetComponent<SpriteRenderer>().flipX = false;
+            m_facingDirection = 1;
+        }
+
         else if (inputX < 0)
-            transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+        {
+            GetComponent<SpriteRenderer>().flipX = true;
+            m_facingDirection = -1;
+        }
 
         // Move
         m_body2d.velocity = new Vector2(inputX * m_speed, m_body2d.velocity.y);
@@ -94,11 +102,11 @@ public class Player : MonoBehaviour
 
         //Run
         else if (Mathf.Abs(inputX) > Mathf.Epsilon)
-            m_animator.SetInteger("AnimState", 2);
+            m_animator.SetInteger("AnimState", 1);
 
         //Combat Idle
         else if (m_combatIdle)
-            m_animator.SetInteger("AnimState", 1);
+            m_animator.SetInteger("AnimState", 2);
 
         //Idle
         else
