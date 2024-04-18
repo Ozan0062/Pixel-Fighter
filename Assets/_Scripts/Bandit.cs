@@ -7,35 +7,39 @@ public class Bandit : MonoBehaviour {
 
     private Animator            m_animator;
     private Rigidbody2D         m_body2d;
-    private Sensor_Bandit       m_groundSensor;
     private int                 m_facingDirection = 1;
-    private bool                m_grounded = false;
     private bool                m_combatIdle = false;
     private bool                m_isDead = false;
+
+    private string horizontalAxis;
+    private string verticalAxis;
+    private string attackButton;
 
     // Use this for initialization
     void Start () {
         m_animator = GetComponent<Animator>();
         m_body2d = GetComponent<Rigidbody2D>();
-        m_groundSensor = transform.Find("GroundSensor").GetComponent<Sensor_Bandit>();
+
+        if (gameObject.tag == "Player1")
+        {
+            horizontalAxis = "Player1_Horizontal";
+            verticalAxis = "Player1_Vertical";
+            attackButton = "Player1_Attack";
+        }
+        // For player 2, use arrow key controls
+        else if (gameObject.tag == "Player2")
+        {
+            horizontalAxis = "Player2_Horizontal";
+            verticalAxis = "Player2_Vertical";
+            attackButton = "Player2_Attack";
+        }
     }
 	
 	// Update is called once per frame
 	void Update () {
-        //Check if character just landed on the ground
-        if (!m_grounded && m_groundSensor.State()) {
-            m_grounded = true;
-            m_animator.SetBool("Grounded", m_grounded);
-        }
-
-        //Check if character just started falling
-        if(m_grounded && !m_groundSensor.State()) {
-            m_grounded = false;
-            m_animator.SetBool("Grounded", m_grounded);
-        }
-
         // -- Handle input and movement --
-        float inputX = Input.GetAxis("Horizontal");
+        float inputX = Input.GetAxis(horizontalAxis);
+        float inputY = Input.GetAxis(verticalAxis);
 
         // Swap direction of sprite depending on walk direction
 
@@ -53,6 +57,7 @@ public class Bandit : MonoBehaviour {
 
         // Move
         m_body2d.velocity = new Vector2(inputX * m_speed, m_body2d.velocity.y);
+        m_body2d.velocity = new Vector2(m_body2d.velocity.x, inputY * m_speed);
 
         //Set AirSpeed in animator
         m_animator.SetFloat("AirSpeed", m_body2d.velocity.y);
@@ -73,7 +78,7 @@ public class Bandit : MonoBehaviour {
             m_animator.SetTrigger("Hurt");
 
         //Attack
-        else if(Input.GetMouseButtonDown(0)) {
+        else if(Input.GetButtonDown(attackButton)) {
             m_animator.SetTrigger("Attack");
         }
 

@@ -106,7 +106,7 @@ GameObject:
   - component: {fileID: 843698373844144653}
   m_Layer: 0
   m_Name: Wizard
-  m_TagString: Player
+  m_TagString: Player2
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -121,7 +121,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1, y: 0, z: 0}
-  m_LocalScale: {x: 3.9591465, y: 3.1737232, z: 1}
+  m_LocalScale: {x: 3.614681, y: 3.1186805, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3586067860671440887}
