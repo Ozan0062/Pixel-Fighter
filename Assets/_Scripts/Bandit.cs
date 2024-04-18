@@ -59,9 +59,6 @@ public class Bandit : MonoBehaviour {
         m_body2d.velocity = new Vector2(inputX * m_speed, m_body2d.velocity.y);
         m_body2d.velocity = new Vector2(m_body2d.velocity.x, inputY * m_speed);
 
-        //Set AirSpeed in animator
-        m_animator.SetFloat("AirSpeed", m_body2d.velocity.y);
-
         // -- Handle Animations --
         //Death
         if (Input.GetKeyDown("e")) {
