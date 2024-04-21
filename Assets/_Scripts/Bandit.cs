@@ -33,6 +33,7 @@ public class Bandit : MonoBehaviour {
             verticalAxis = "Player2_Vertical";
             attackButton = "Player2_Attack";
         }
+
     }
 	
 	// Update is called once per frame
