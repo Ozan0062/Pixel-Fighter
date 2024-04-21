@@ -10,6 +10,8 @@ public class Bandit : MonoBehaviour {
     private int                 m_facingDirection = 1;
     private bool                m_combatIdle = false;
     private bool                m_isDead = false;
+    public int                  health;
+    public int                  maxHealth = 100;
 
     private string horizontalAxis;
     private string verticalAxis;
@@ -19,6 +21,7 @@ public class Bandit : MonoBehaviour {
     void Start () {
         m_animator = GetComponent<Animator>();
         m_body2d = GetComponent<Rigidbody2D>();
+        health = maxHealth;
 
         if (gameObject.tag == "Player1")
         {
@@ -95,5 +98,23 @@ public class Bandit : MonoBehaviour {
         //Idle
         else
             m_animator.SetInteger("AnimState", 0);
+    }
+
+    public void TakeDamage(int amount)
+    {
+        health -= amount;
+        m_animator.SetTrigger("Hurt");
+        if (health <= 0)
+        {
+            m_animator.SetTrigger("Death");
+        }
+    }
+
+    public void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Player2")
+        {
+            TakeDamage(10);
+        }
     }
 }
