@@ -1,23 +1,34 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IDamage
 {
 
     [SerializeField] float m_speed = 4.0f;
+    [SerializeField] private Transform attackTransform;
+    [SerializeField] private float attackRange = 1.0f;
+    [SerializeField] private LayerMask attackableLayer;
+    [SerializeField] private int damageAmount = 10;
+    [SerializeField] private float timeBtwAttacks = 0.15f;
 
     private Animator m_animator;
     private Rigidbody2D m_body2d;
+    private RaycastHit2D[] hits;
     private int m_facingDirection = 1;
     private bool m_combatIdle = false;
     private bool m_isDead = false;
     public int health;
     public int maxHealth = 100;
+    private float attackTimeCounter;
+    public bool shouldBeDamaging { get; private set; } = false;
+    public bool HasTakenDamage { get; set; }
 
     private string horizontalAxis;
     private string verticalAxis;
     private string attackButton;
     private string shieldButton;
+    private List<IDamage> iDamageables = new List<IDamage>();
 
     // Use this for initialization
     void Start()
@@ -25,6 +36,7 @@ public class Player : MonoBehaviour
         m_animator = GetComponent<Animator>();
         m_body2d = GetComponent<Rigidbody2D>();
         health = maxHealth;
+        attackTimeCounter = timeBtwAttacks;
 
         if (gameObject.tag == "Player1")
         {
@@ -47,6 +59,8 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        attackTimeCounter += Time.deltaTime;
+
         // -- Handle input and movement --
         float inputX = Input.GetAxis(horizontalAxis);
         float inputY = Input.GetAxis(verticalAxis);
@@ -62,6 +76,16 @@ public class Player : MonoBehaviour
         {
             GetComponent<SpriteRenderer>().flipX = true;
             m_facingDirection = -1;
+        }
+
+        // Adjust attackTransform position based on facing direction
+        if (m_facingDirection == -1)
+        {
+            attackTransform.localPosition = new Vector3(-Mathf.Abs(attackTransform.localPosition.x), attackTransform.localPosition.y, attackTransform.localPosition.z);
+        }
+        else
+        {
+            attackTransform.localPosition = new Vector3(Mathf.Abs(attackTransform.localPosition.x), attackTransform.localPosition.y, attackTransform.localPosition.z);
         }
 
         // Move
@@ -86,9 +110,12 @@ public class Player : MonoBehaviour
             m_animator.SetTrigger("Hurt");
 
         //Attack
-        else if (Input.GetButtonDown(attackButton))
+        else if (Input.GetButtonDown(attackButton) && attackTimeCounter >= timeBtwAttacks)
         {
+            attackTimeCounter = 0;
+            Damage();
             m_animator.SetTrigger("Attack");
+            
         }
 
         // Block
@@ -120,20 +147,70 @@ public class Player : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
+        HasTakenDamage = true;
         health -= amount;
         m_animator.SetTrigger("Hurt");
         if (health <= 0)
         {
             m_animator.SetTrigger("Death");
+            Destroy(gameObject, 1.0f);
         }
     }
 
-    public void OnCollisionEnter2D(Collision2D collision)
+    //public void OnCollisionEnter2D(Collision2D collision)
+    //{
+    //    if (collision.gameObject.tag == "Player1")
+    //    {
+    //        TakeDamage(10);
+    //    }
+    //}
+
+    public IEnumerator Damage()
     {
-        if (collision.gameObject.tag == "Player1")
+        shouldBeDamaging = true;
+
+        while (shouldBeDamaging)
         {
-            TakeDamage(10);
+            hits = Physics2D.CircleCastAll(attackTransform.position, attackRange, transform.right, 0f, attackableLayer);
+
+            for (int i = 0; i < hits.Length; i++)
+            {
+                IDamage damage = hits[i].collider.gameObject.GetComponent<IDamage>();
+
+                if (damage != null && !damage.HasTakenDamage)
+                {
+                    damage.TakeDamage(damageAmount);
+                    iDamageables.Add(damage);
+                }
+            }
+
+            yield return null;
         }
+        ReturnAttackablesToDamageable();
+    }
+
+    private void ReturnAttackablesToDamageable()
+    {
+        foreach (IDamage thingThatWasDamaged in iDamageables)
+        {
+            thingThatWasDamaged.HasTakenDamage = false;
+        }
+        iDamageables.Clear();
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.DrawWireSphere(attackTransform.position, attackRange);
+    }
+
+    public void ShouldBeDamagingToTrue()
+    {
+       shouldBeDamaging = true;
+    }
+
+    public void ShouldBeDamagingToFalse()
+    {
+        shouldBeDamaging = false;
     }
     
 }
