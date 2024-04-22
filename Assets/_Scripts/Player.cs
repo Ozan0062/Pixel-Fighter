@@ -95,27 +95,27 @@ public class Player : MonoBehaviour, IDamage
 
         // -- Handle Animations --
         //Death
-        if (Input.GetKeyDown("e"))
-        {
-            if (!m_isDead)
-                m_animator.SetTrigger("Death");
-            else
-                m_animator.SetTrigger("Recover");
+        //if (Input.GetKeyDown("e"))
+        //{
+        //    if (!m_isDead)
+        //        m_animator.SetTrigger("Death");
+        //    else
+        //        m_animator.SetTrigger("Recover");
 
-            m_isDead = !m_isDead;
-        }
+        //    m_isDead = !m_isDead;
+        //}
 
-        //Hurt
-        else if (Input.GetKeyDown("q"))
-            m_animator.SetTrigger("Hurt");
+        ////Hurt
+        //else if (Input.GetKeyDown("q"))
+        //    m_animator.SetTrigger("Hurt");
 
         //Attack
-        else if (Input.GetButtonDown(attackButton) && attackTimeCounter >= timeBtwAttacks)
+        if (Input.GetButtonDown(attackButton) && attackTimeCounter >= timeBtwAttacks)
         {
             attackTimeCounter = 0;
             Damage();
             m_animator.SetTrigger("Attack");
-            
+
         }
 
         // Block
@@ -126,7 +126,9 @@ public class Player : MonoBehaviour, IDamage
         }
 
         else if (Input.GetMouseButtonUp(1))
+        {
             m_animator.SetBool("IdleBlock", false);
+        }
 
         //Change between idle and combat idle
         else if (Input.GetKeyDown("f"))
@@ -147,23 +149,15 @@ public class Player : MonoBehaviour, IDamage
 
     public void TakeDamage(int amount)
     {
-        HasTakenDamage = true;
-        health -= amount;
-        m_animator.SetTrigger("Hurt");
-        if (health <= 0)
-        {
-            m_animator.SetTrigger("Death");
-            Destroy(gameObject, 1.0f);
-        }
+            HasTakenDamage = true;
+            health -= amount;
+            m_animator.SetTrigger("Hurt");
+            if (health <= 0)
+            {
+                m_animator.SetTrigger("Death");
+                Destroy(gameObject, 1.0f);
+            }
     }
-
-    //public void OnCollisionEnter2D(Collision2D collision)
-    //{
-    //    if (collision.gameObject.tag == "Player1")
-    //    {
-    //        TakeDamage(10);
-    //    }
-    //}
 
     public IEnumerator Damage()
     {

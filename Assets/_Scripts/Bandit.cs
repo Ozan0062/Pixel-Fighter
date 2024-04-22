@@ -91,21 +91,21 @@ public class Bandit : MonoBehaviour, IDamage
 
         // -- Handle Animations --
         //Death
-        if (Input.GetKeyDown("e")) {
-            if(!m_isDead)
-                m_animator.SetTrigger("Death");
-            else
-                m_animator.SetTrigger("Recover");
+        //if (Input.GetKeyDown("e")) {
+        //    if(!m_isDead)
+        //        m_animator.SetTrigger("Death");
+        //    else
+        //        m_animator.SetTrigger("Recover");
 
-            m_isDead = !m_isDead;
-        }
+        //    m_isDead = !m_isDead;
+        //}
             
-        //Hurt
-        else if (Input.GetKeyDown("q"))
-            m_animator.SetTrigger("Hurt");
+        ////Hurt
+        //else if (Input.GetKeyDown("q"))
+        //    m_animator.SetTrigger("Hurt");
 
         //Attack
-        else if (Input.GetButtonDown(attackButton) && attackTimeCounter >= timeBtwAttacks)
+        if (Input.GetButtonDown(attackButton) && attackTimeCounter >= timeBtwAttacks)
         {
             attackTimeCounter = 0;
             Damage();
@@ -141,14 +141,6 @@ public class Bandit : MonoBehaviour, IDamage
             Destroy(gameObject, 1.0f);
         }
     }
-
-    //public void OnCollisionEnter2D(Collision2D collision)
-    //{
-    //    if (collision.gameObject.tag == "Player2")
-    //    {
-    //        TakeDamage(10);
-    //    }
-    //}
 
     public IEnumerator Damage()
     {
